@@ -10,7 +10,7 @@
   (:require [ring.adapter.jetty]))
 
 (defroutes routes
-  (GET "/" actions/new-hand)
+  (GET "/" [] actions/new-hand)
   (GET "/hands/new" [] actions/new-hand)
   (POST "/bids" [] actions/create-bid)
   (resources "/"))
