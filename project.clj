@@ -10,6 +10,7 @@
                  [ring/ring-devel "1.1.0"]
                  [hiccup "1.0.3"]
                  [compojure "0.6.4"]]
+  :min-lein-version "2.0.0"
   :profiles {:dev {:source-paths ["dev"]
                    :dependencies [[org.clojure/tools.namespace "0.2.3"]
                                   [org.clojure/java.classpath "0.2.0"]]}})
