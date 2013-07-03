@@ -1,5 +1,6 @@
 (ns sayc-app.system
-  (:use [sayc-app.web])
+  (:use [sayc-app.web]
+        [sayc-app.bridge.scoring])
   (:require [ring.adapter.jetty :as ring]))
 
 (defn system []
