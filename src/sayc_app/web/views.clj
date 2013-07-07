@@ -3,7 +3,9 @@
             [clojure.data.json :as json]
             [hiccup.core :as hiccup]
             [hiccup.form :as form]
-            [sayc-app.bridge.bidding])
+            [sayc-app.bridge.bidding]
+            [sayc-app.bridge.scoring]
+            )
   (:use [hiccup.page :only [include-css]]
         [sayc-app.bridge.deck :only [card-rank suit-rank]]))
 
@@ -20,11 +22,11 @@
 (defmethod display-bid clojure.lang.PersistentArrayMap [{level :level strain :strain}]
   (str level (strain display-strain)))
 
-(defn option-for-strain [strain]
-  [:option {:value (name strain)} (name strain)])
+(defn option-for-symbol [value]
+  [:option {:value (name value)} (name value)])
 
-(defn option-for-level [level]
-  [:option {:value (str level)} (str level)])
+(defn option-for-int [value]
+  [:option {:value (str value)} (str value)])
 
 (defn suit-div [[suit cards]]
   (hiccup/html
@@ -47,8 +49,8 @@
      (display-hand hand)
      [:form {:action "/bids" :method "POST"}
       [:input {:type "hidden" :name "hand" :value (json/write-str hand)}]
-      [:select {:name "strain"} (map option-for-strain sayc-app.bridge.bidding/strains)]
-      [:select {:name "level"} (map option-for-level sayc-app.bridge.bidding/levels)]
+      [:select {:name "strain"} (map option-for-symbol sayc-app.bridge.bidding/strains)]
+      [:select {:name "level"} (map option-for-int sayc-app.bridge.bidding/levels)]
       [:input {:type "submit" :value "Bid"}]]]
     [:form {:action "/bids" :method "POST"}
      [:input {:type "hidden" :name "hand" :value (json/write-str hand)}]
@@ -63,7 +65,34 @@
     [:body [:h1 "SAYC Says"]
      (display-hand hand)
      [:div.sayc-bid (str "SAYC says: " (display-bid sayc-bid))]
-     [:div.user-bid (str "You bid: " (display-bid user-bid))] 
-     [:a {:href "/hands/new"} "View a New Hand"] 
-     ]
-  ))
+     [:div.user-bid (str "You bid: " (display-bid user-bid))]
+     [:a {:href "/hands/new"} "View a New Hand"]]))
+
+(defn hand-form []
+  (hiccup/html
+    [:head (include-css "/css/bridge.css")]
+    [:body
+      [:form {:action "/scored_hands" :method "POST"}
+        [:label {:for "hand[declarer]"} "Declarer"]
+        [:select {:name "hand[declarer]"} (map option-for-symbol sayc-app.bridge.scoring/declarers)]
+        [:br]
+        [:label {:for "hand[vulnerable]"} "Vulnerable"]
+        [:select {:name "hand[vulnerable]"} (map option-for-symbol sayc-app.bridge.scoring/vulnerabilities)]
+        [:br]
+        [:h4 "Bid"]
+        [:label {:for "hand[bid][level]"} "Level"]
+        [:select {:name "hand[bid][level]"} (map option-for-int sayc-app.bridge.bidding/levels)]
+        [:label {:for "hand[bid][strain]"} "Strain"]
+        [:select {:name "hand[bid][strain]"} (map option-for-symbol sayc-app.bridge.bidding/strains)]
+        [:label {:for "hand[bid][doubled]"} "Doubled?"]
+        [:input {:type "checkbox" :name "hand[bid][doubled]"}]
+        [:label {:for "hand[bid][redoubled]"} "Redoubled?"]
+        [:input {:type "checkbox" :name "hand[bid][redoubled]"}]
+        [:h4 "Tricks Taken"]
+        [:input {:type "text" :name "hand[tricks][we]"}]
+        [:input {:type "text" :name "hand[tricks][they]"}]
+        [:br]
+        [:input {:type "submit" :value "Score"}]]]))
+
+(defn show-score [score]
+  (str score))

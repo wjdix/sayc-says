@@ -1,7 +1,8 @@
 (ns sayc-app.bridge.scoring)
 
+(def declarers [:north :south :east :west])
+(def vulnerabilities [:we :they :both :none])
 (def declarer-score-name {:north :we :south :we :east :they :west :they})
-
 (def defender-score-name-for-declarer {:north :they :south :they :east :we :west :we})
 
 (def base-score-scale

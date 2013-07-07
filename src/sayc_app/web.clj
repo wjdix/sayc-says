@@ -1,5 +1,5 @@
 (ns sayc-app.web
-  (:use [compojure.core :only [defroutes GET POST]]
+  (:use [compojure.core :only [defroutes GET POST PUT]]
         [compojure.route :only [resources]]
         [ring.middleware.stacktrace :as st]
         [ring.middleware.params :as params]
@@ -13,10 +13,13 @@
   (GET "/" [] actions/new-hand)
   (GET "/hands/new" [] actions/new-hand)
   (POST "/bids" [] actions/create-bid)
+  (GET "/scored_hands/new" [] actions/new-scored-hand)
+  (POST "/scored_hands" [] actions/create-scored-hand)
   (resources "/"))
 
 (defn create-handler []
   (-> (var routes)
       (keyword-params/wrap-keyword-params)
+      (nested-params/wrap-nested-params)
       (params/wrap-params)
       (st/wrap-stacktrace)))
