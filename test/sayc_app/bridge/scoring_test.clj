@@ -72,3 +72,9 @@
     (is (= expected (score hand))))
     )
 )
+
+(deftest add-bridge-scores
+  (testing "it correctly adds bridge scores"
+    (is (= {:we {:over 100 :under 50} :they {:over 400 :under 60}}
+           (add-score {:we {:over 40 :under 25} :they {:over 300 :under 10}}
+                      {:we {:over 60 :under 25} :they {:over 100 :under 50}})))))

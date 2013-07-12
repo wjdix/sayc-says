@@ -12,6 +12,12 @@
    :diamond (repeat 20)
    :club (repeat 20)})
 
+(defn add-score [& scores]
+  {:we {:over (apply + (map #(get-in % [:we :over]) scores))
+        :under (apply + (map #(get-in % [:we :under]) scores))}
+   :they {:over (apply + (map #(get-in % [:they :over]) scores))
+          :under (apply + (map #(get-in % [:they :under]) scores))}})
+
 (defn declarer-key [hand]
   ((:declarer hand) declarer-score-name))
 

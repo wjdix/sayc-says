@@ -1,8 +1,7 @@
 (ns sayc-app.web.actions
   (:use [sayc-app.bridge.deck :as deck]
         [sayc-app.web.views :as views]
-        [sayc-app.bridge.scoring :as scoring]
-        )
+        [sayc-app.bridge.scoring :as scoring])
   (:require [clojure.data.json :as json]))
 
 (defn new-hand [request] (views/show-hand (first (deck/deal))))
