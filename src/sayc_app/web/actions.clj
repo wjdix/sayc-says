@@ -1,12 +1,16 @@
 (ns sayc-app.web.actions
   (:use [sayc-app.bridge.deck :as deck]
         [sayc-app.web.views :as views]
-        [sayc-app.bridge.scoring :as scoring])
+        [sayc-app.bridge.scoring :as scoring]
+        [ring.util.response :only [redirect not-found]]
+        )
   (:require [clojure.data.json :as json]))
+
+(defn- new-uuid [] (str (java.util.UUID/randomUUID)))
 
 (defn new-hand [request] (views/show-hand (first (deck/deal))))
 
-(def rubbers {})
+(def chicago-games (atom {}))
 
 (defn create-bid [request]
   (let [params (:params request)
@@ -37,8 +41,30 @@
              [:tricks :they]
              #(. Integer parseInt %)))
 
+(defn process-hand-params [hand-params]
+  (-> hand-params declarer-as-keyword strain-as-keyword level-as-int tricks-as-ints))
+
 (defn create-scored-hand [request]
   (let [hand (get-in request [:params :hand])]
-    (views/show-score (sayc-app.bridge.scoring/score
-           (-> hand declarer-as-keyword strain-as-keyword level-as-int tricks-as-ints)))))
+    (views/show-score (sayc-app.bridge.scoring/score (process-hand-params hand)))))
 
+(defn new-chicago-game [request] (views/chicago-form))
+
+(defn create-chicago-game [request]
+  (let [uuid (new-uuid)]
+    (swap! chicago-games assoc uuid [])
+    (redirect (str "/chicago_games/" uuid))))
+
+(defn show-chicago-game [id]
+  (let [game (get @chicago-games id)]
+    (if game
+      (views/display-chicago-game id game)
+      (not-found "NOT FOUND"))))
+
+(defn add-hand-to-chicago-game [request]
+  (let [id (get-in request [:params :id])
+        game (get @chicago-games id)
+        hand (get-in request [:params :hand])]
+    (if (not game) (not-found "NOT FOUND"))
+    (swap! chicago-games assoc id (conj game (process-hand-params hand)))
+    (redirect (str "/chicago_games/" id))))

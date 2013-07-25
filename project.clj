@@ -6,10 +6,10 @@
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [org.clojure/core.logic "0.8.3"]
                  [org.clojure/data.json "0.2.2"]
-                 [ring/ring-jetty-adapter "0.3.10"]
+                 [ring/ring-jetty-adapter "1.1.0"]
                  [ring/ring-devel "1.1.0"]
                  [hiccup "1.0.3"]
-                 [compojure "0.6.4"]]
+                 [compojure "1.1.5"]]
   :min-lein-version "2.0.0"
   :profiles {:dev {:source-paths ["dev"]
                    :dependencies [[org.clojure/tools.namespace "0.2.3"]
