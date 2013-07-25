@@ -18,6 +18,7 @@
   (rank {:ace "A" :king "K" :queen "Q" :jack "J"} (name rank)))
 
 (defmulti display-bid class)
+(defmethod display-bid nil [_] "")
 (defmethod display-bid clojure.lang.Keyword [pass] "Pass")
 (defmethod display-bid clojure.lang.PersistentArrayMap [{level :level strain :strain}]
   (str level (strain display-strain)))
@@ -134,7 +135,7 @@
 (defn- header-for-game [game]
   (if (= 4 (count game)) "Game Completed" "Game In Progress"))
 
-(defn display-hand [hand]
+(defn display-scored-hand [hand]
   (hiccup/html
     [:h4 "Bid"]
     [:p (str (:declarer hand) " bid " (display-bid (:bid hand)))]
@@ -153,7 +154,7 @@
     [:body
      [:h2 (header-for-game game)]
      [:br]
-     (map display-hand game)
+     (map display-scored-hand game)
      [:br]
      (display-total-score game)
      (new-hand-form (str "/chicago_games/" id "/hands"))]))
