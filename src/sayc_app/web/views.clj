@@ -42,32 +42,46 @@
     )
   )
 
-(defn show-hand [hand]
+(defn layout [& contains]
   (hiccup/html
     [:head
-      (include-css "/css/bridge.css") ]
-    [:body [:h1 "Bid This Hand"]
+      (include-css "/css/bridge.css")
+      (include-css "/css/bootstrap/css/bootstrap.css")
+     [:style {:type "text/css"} "body { padding-top: 80px; }"]
+     ]
+    [:body
+     [:div.navbar.navbar-fixed-top
+      [:div.navbar-inner
+       [:div.container
+         [:span [:a.brand "SAYC Says"]]
+         [:ul.nav
+           [:li [:a {:href "/"} "Practice Bidding"]]
+           [:li [:a {:href "/chicago_games/new"} "Chicago Match"]]]
+        ]]]
+     [:div.container contains]]))
+
+(defn show-hand [hand]
+  (layout (hiccup/html
+    [:h1 "Bid This Hand"]
      (display-hand hand)
      [:form {:action "/bids" :method "POST"}
       [:input {:type "hidden" :name "hand" :value (json/write-str hand)}]
       [:select {:name "strain"} (map option-for-symbol sayc-app.bridge.bidding/strains)]
       [:select {:name "level"} (map option-for-int sayc-app.bridge.bidding/levels)]
-      [:input {:type "submit" :value "Bid"}]]]
+      [:input {:type "submit" :value "Bid"}]]
     [:form {:action "/bids" :method "POST"}
      [:input {:type "hidden" :name "hand" :value (json/write-str hand)}]
      [:input {:type "hidden" :name "bid" :value "Pass"}]
      [:input {:type "submit" :value "Pass"}] ]
-    ))
+    )))
 
 (defn show-bid [hand sayc-bid user-bid]
-  (hiccup/html
-    [:head
-     (include-css "/css/bridge.css")]
-    [:body [:h1 "SAYC Says"]
+  (layout
+    [:h1 "SAYC Says"]
      (display-hand hand)
      [:div.sayc-bid (str "SAYC says: " (display-bid sayc-bid))]
      [:div.user-bid (str "You bid: " (display-bid user-bid))]
-     [:a {:href "/hands/new"} "View a New Hand"]]))
+     [:a {:href "/hands/new"} "View a New Hand"]))
 
 (defn nested-field-name [& fields] (apply str (first fields) (map #(str "[" % "]") (rest fields))))
 
@@ -105,9 +119,7 @@
      [:input {:type "submit" :value "Score"}]]))
 
 (defn hand-form []
-  (hiccup/html
-    [:head (include-css "/css/bridge.css")]
-    [:body (new-hand-form "/scored_hands")]))
+  (layout (new-hand-form "/scored_hands")))
 
 (defn display-score [score]
   (hiccup/html
@@ -117,44 +129,33 @@
      [:tr [:th "Under"] [:td (get-in score [:we :under])] [:td (get-in score [:they :under])]]]))
 
 (defn show-score [score]
-  (hiccup/html
-    [:head]
-    [:body
-      [:h2 "Score"]
-     (display-score score)
-     ]))
+  (layout [:h2 "Score"] (display-score score)))
 
 
 (defn chicago-form []
-  (hiccup/html
-    [:head]
-    [:body
-      [:h2 "New Chicago Game"]
-      [:form {:action "/chicago_games" :method "POST"} [:input {:type "submit" :value "Start"}]]]))
+  (layout
+    [:h2 "New Chicago Game"]
+    [:form {:action "/chicago_games" :method "POST"} [:input {:type "submit" :value "Start"}]]))
 
 (defn- header-for-game [game]
   (if (= 4 (count game)) "Game Completed" "Game In Progress"))
 
 (defn display-scored-hand [hand]
   (hiccup/html
-    [:h4 "Bid"]
-    [:p (str (:declarer hand) " bid " (display-bid (:bid hand)))]
-    [:h4 "Score"]
-    (display-score (sayc-app.bridge.scoring/score hand))
-    ))
+    [:div.row
+     [:div.span6 [:h4 "Bid"] [:p (str (:declarer hand) " bid " (display-bid (:bid hand)))]]
+     [:div.span6 [:h4 "Score"] (display-score (sayc-app.bridge.scoring/score hand))]]))
 
 (defn display-total-score [game]
   (if (= 4 (count game))
-    (hiccup/html [:h4 "Total Score"] [:div (display-score (sayc-app.bridge.scoring/add-score (map sayc-app.bridge.scoring/score game)))])
+    (hiccup/html [:h4 "Total Score"] [:div (display-score (apply sayc-app.bridge.scoring/add-score (map sayc-app.bridge.scoring/score game)))])
     ))
 
 (defn display-chicago-game [id game]
-  (hiccup/html
-    [:head]
-    [:body
+  (layout
      [:h2 (header-for-game game)]
      [:br]
      (map display-scored-hand game)
      [:br]
      (display-total-score game)
-     (new-hand-form (str "/chicago_games/" id "/hands"))]))
+     (new-hand-form (str "/chicago_games/" id "/hands"))))
