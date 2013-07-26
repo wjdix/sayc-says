@@ -83,21 +83,28 @@
      [:div.user-bid (str "You bid: " (display-bid user-bid))]
      [:a {:href "/hands/new"} "View a New Hand"]))
 
-(defn nested-field-name [& fields] (apply str (first fields) (map #(str "[" % "]") (rest fields))))
+(defn nested-field-name [fields] (apply str (first fields) (map #(str "[" % "]") (rest fields))))
 
-(defn- labelled-text-field [label & fields]
-  (let [field-name (apply nested-field-name fields)]
+(defn- labelled-text-field [label fields errors]
+  (let [field-name (nested-field-name fields)
+        error-location (map keyword fields)
+        errors-for-field (get-in errors (rest error-location))]
     (hiccup/html
       [:label {:for field-name} label]
+      (if (not (nil? errors)) [:div.errors (str errors-for-field)])
       [:input {:type "text" :name field-name}])))
 
-(defn- labelled-checkbox [label & fields]
-  (let [field-name (apply nested-field-name fields)]
+(defn- labelled-checkbox [label fields errors]
+  (let [field-name (nested-field-name fields)
+        error-location (map keyword fields)
+        errors (get-in errors (rest error-location)) ]
     (hiccup/html
       [:label {:for field-name} label]
+      (if (not (nil? errors)) [:div.errors (str errors)])
+      [:div.errors ]
       [:input {:type "checkbox" :name field-name}])))
 
-(defn new-hand-form [route]
+(defn new-hand-form [route errors]
   (hiccup/html
     [:form {:action route :method "POST"}
      [:label {:for "hand[declarer]"} "Declarer"]
@@ -110,16 +117,16 @@
      [:select {:name "hand[bid][level]"} (map option-for-int sayc-app.bridge.bidding/levels)]
      [:label {:for "hand[bid][strain]"} "Strain"]
      [:select {:name "hand[bid][strain]"} (map option-for-symbol sayc-app.bridge.bidding/strains)]
-     (labelled-checkbox "Doubled?" "hand" "bid" "doubled")
-     (labelled-checkbox "Redoubled?" "hand" "bid" "redoubled")
+     (labelled-checkbox "Doubled?" ["hand" "bid" "doubled"] errors)
+     (labelled-checkbox "Redoubled?" ["hand" "bid" "redoubled"] errors)
      [:h4 "Tricks Taken"]
-     (labelled-text-field "We" "hand" "tricks" "we")
-     (labelled-text-field "They" "hand" "tricks" "they")
+     (labelled-text-field "We" ["hand" "tricks" "we"] errors)
+     (labelled-text-field "They" ["hand" "tricks" "they"] errors)
      [:br]
      [:input {:type "submit" :value "Score"}]]))
 
 (defn hand-form []
-  (layout (new-hand-form "/scored_hands")))
+  (layout (new-hand-form "/scored_hands" nil)))
 
 (defn display-score [score]
   (hiccup/html
@@ -130,7 +137,6 @@
 
 (defn show-score [score]
   (layout [:h2 "Score"] (display-score score)))
-
 
 (defn chicago-form []
   (layout
@@ -151,11 +157,11 @@
     (hiccup/html [:h4 "Total Score"] [:div (display-score (apply sayc-app.bridge.scoring/add-score (map sayc-app.bridge.scoring/score game)))])
     ))
 
-(defn display-chicago-game [id game]
+(defn display-chicago-game [id game errors]
   (layout
      [:h2 (header-for-game game)]
      [:br]
      (map display-scored-hand game)
      [:br]
      (display-total-score game)
-     (new-hand-form (str "/chicago_games/" id "/hands"))))
+     (new-hand-form (str "/chicago_games/" id "/hands") errors)))

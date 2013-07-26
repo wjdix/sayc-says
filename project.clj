@@ -7,6 +7,7 @@
                  [org.clojure/core.logic "0.8.3"]
                  [org.clojure/data.json "0.2.2"]
                  [ring/ring-jetty-adapter "1.1.0"]
+                 [metis "0.3.3"]
                  [ring/ring-devel "1.1.0"]
                  [hiccup "1.0.3"]
                  [compojure "1.1.5"]]
