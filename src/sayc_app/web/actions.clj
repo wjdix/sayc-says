@@ -76,11 +76,11 @@
   (assoc prereqs :status
          (cond
            (nil? (:game prereqs)) 404
-           (not (nil? (:errors prereqs))) 422
+           (not (empty? (:errors prereqs))) 422
            :else 201)))
 
 (defn persist [request]
-  (let [new-game (conj (:game request) (:hand request))]
+  (let [new-game (conj (:game request) (process-hand-params (:hand request)))]
     (swap! chicago-games assoc (:id request) new-game)
     (assoc request :game new-game)))
 

@@ -163,5 +163,7 @@
      [:br]
      (map display-scored-hand game)
      [:br]
-     (display-total-score game)
-     (new-hand-form (str "/chicago_games/" id "/hands") errors)))
+     (if (< (count game) 4)
+       (new-hand-form (str "/chicago_games/" id "/hands") errors)
+       (display-total-score game)
+       )))
