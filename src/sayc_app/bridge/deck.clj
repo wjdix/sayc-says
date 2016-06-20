@@ -1,21 +1,17 @@
-(ns sayc-app.bridge.deck)
+(ns sayc-app.bridge.deck
+  (:require [clojure.spec :as s]
+            [sayc-app.bridge.types :refer [rank? suit?]]))
 
-(def ranks
-  [:2, :3, :4, :5, :6, :7, :8, :9, :10, :jack, :queen, :king, :ace])
+(def deck (for [suit suit? rank rank?]
+            {:sayc-app.bridge.types/rank rank :sayc-app.bridge.types/suit suit}))
 
-
-(def suits
-  [:club, :diamond, :heart, :spade])
-
-(defn card-rank [{rank :rank}]
-  (rank (apply hash-map (interleave (reverse ranks) (range)))))
-
-(defn suit-rank [suit]
-  (suit (apply hash-map (interleave (reverse suits) (range)))))
-
-(def deck
-  (for [rank ranks suit suits]
-    {:suit suit :rank rank}))
+(s/fdef deal
+        :args (s/spec empty?)
+        :ret (s/tuple
+              :sayc-app.brdige.types/hand
+              :sayc-app.bridge.types/hand
+              :sayc-app.bridge.types/hand
+              :sayc-app.bridge.types/hand))
 
 (defn deal []
-  (partition 13 (shuffle deck)))
+  (into [] (map #(into [] %) (partition 13 (shuffle deck)))))

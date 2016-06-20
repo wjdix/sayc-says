@@ -14,4 +14,5 @@
   :min-lein-version "2.0.0"
   :profiles {:dev {:source-paths ["dev"]
                    :dependencies [[org.clojure/tools.namespace "0.2.3"]
+                                  [org.clojure/test.check "0.9.0"]
                                   [org.clojure/java.classpath "0.2.0"]]}})

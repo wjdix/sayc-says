@@ -35,3 +35,18 @@
 (defn reset []
     (stop)
     (refresh :after 'user/go))
+
+(defn hand []
+  (into [] (first (sayc-app.bridge.deck/deal))))
+
+(defn bid [level strain]
+  {:sayc-app.bridge.types/strain strain :sayc-app.bridge.types/level level})
+
+(defn points [hand]
+  (clojure.core.logic/run 1 [q] (sayc-app.bridge.bido/hand-pointo hand q)))
+
+(defn test-it []
+  (let [test-hand (hand)]
+    (println (points test-hand))
+    (println (clojure.core.logic/run 1 [q] (sayc-app.bridge.bido/hand-distributo test-hand q)))
+    (sayc-app.bridge.bidding/open test-hand)))
