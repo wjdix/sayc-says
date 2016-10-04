@@ -10,6 +10,7 @@
                  [ring/ring-devel "1.1.0"]
                  [hiccup "1.0.3"]
                  [org.clojure/core.logic "0.8.10"]
+                 [instaparse "1.4.2"]
                  [compojure "1.1.5"]]
   :min-lein-version "2.0.0"
   :profiles {:dev {:source-paths ["dev"]

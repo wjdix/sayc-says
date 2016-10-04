@@ -42,11 +42,11 @@
 
 (defn pointo [rank point]
   (conde
-   [(== rank :jack)                             (== point 1)]
-   [(== rank :queen)                            (== point 2)]
-   [(== rank :king)                             (== point 3)]
-   [(== rank :ace)                              (== point 4)]
-   [(not-membero rank face-cards)               (== point 0)]))
+   [(== rank :jack)               (== point 1)]
+   [(== rank :queen)              (== point 2)]
+   [(== rank :king)               (== point 3)]
+   [(== rank :ace)                (== point 4)]
+   [(not-membero rank face-cards) (== point 0)]))
 
 (defn card-pointo [card point]
   (fresh [r]
