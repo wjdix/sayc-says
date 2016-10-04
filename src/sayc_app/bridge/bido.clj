@@ -125,19 +125,25 @@
          (fd/<= hcp high)
          (fd/>= hcp low)))
 
-(defn balanced? [hand]
-  (conde [(fresh [distribution spade-count heart-count club-count diamond-count]
-                 (hand-distributo hand distribution)
-                 (== spade-count   (:sayc-app.bridge.types/spade distribution))
-                 (== heart-count   (:sayc-app.bridge.types/heart distribution))
-                 (== club-count    (:sayc-app.bridge.types/club distribution))
-                 (== diamond-count (:sayc-app.bridge.types/diamond distribution))
+(defn betweeno [n l h]
+  (fd/<= n h)
+  (fd/>= n l))
 
-                 (fd/< 2 heart-count)   (fd/>= 5 heart-count)
-                 (fd/< 2 diamond-count) (fd/>= 5 diamond-count)
-                 (fd/< 2 club-count)    (fd/>= 5 club-count)
-                 (fd/< 2 spade-count)   (fd/>= 5 spade-count))]
-         [(== 1 0)]))
+(defn balanced-distributo [distribution]
+  (fresh [sc hc cc dc]
+    (featurec distribution {:sayc-app.bridge.types/spade sc
+                            :sayc-app.bridge.types/club cc
+                            :sayc-app.bridge.types/diamond dc
+                            :sayc-app.bridge.types/heart hc})
+    (betweeno sc 2 5)
+    (betweeno hc 2 5)
+    (betweeno cc 2 5)
+    (betweeno sc 2 5)))
+
+(defn balanced? [hand]
+  (fresh [d]
+    (hand-distributo hand d)
+    (balanced-distributo d)))
 
 (defn strong-two-clubso [hand bid]
   (conde

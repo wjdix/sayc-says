@@ -1,103 +1,96 @@
 (ns sayc-app.bridge.bidding-test
   (:require [clojure.test :refer :all]
+            [sayc-app.bridge.types :refer (card bid)]
             [sayc-app.bridge.bidding :refer :all]))
 
 (deftest open-bidding
   (testing "bids 1NT hands"
     (testing "opens 15 HCP balanced hands"
-      (let [hand [
-                   {:suit :spade :rank :ace}
-                   {:suit :spade :rank :king}
-                   {:suit :spade :rank :5}
-                   {:suit :spade :rank :4}
-                   {:suit :heart :rank :ace}
-                   {:suit :heart :rank :10}
-                   {:suit :heart :rank :9}
-                   {:suit :diamond :rank :ace}
-                   {:suit :diamond :rank :10}
-                   {:suit :diamond :rank :8}
-                   {:suit :club :rank :4}
-                   {:suit :club :rank :3}
-                   {:suit :club :rank :2} ]]
-        (is (= {:strain :notrump :level 1} (open hand))))))
+      (let [hand [(card :spade :ace)
+                  (card :spade :king)
+                  (card :spade 5)
+                  (card :spade 4)
+                  (card :heart :ace)
+                  (card :heart 10)
+                  (card :heart 9)
+                  (card :diamond :ace)
+                  (card :diamond 10)
+                  (card :diamond 8)
+                  (card :club 4)
+                  (card :club 3)
+                  (card :club 2)]]
+        (is (= (bid 1 :notrump) (open hand))))))
   (testing "bids level 1 majors correctly"
     (testing "bids 1S with opening points and 5 spades"
-      (let [hand [
-                   {:suit :spade :rank :ace}
-                   {:suit :spade :rank :king}
-                   {:suit :spade :rank :9}
-                   {:suit :spade :rank :5}
-                   {:suit :spade :rank :4}
-                   {:suit :heart :rank :ace}
-                   {:suit :diamond :rank :ace}
-                   {:suit :diamond :rank :10}
-                   {:suit :diamond :rank :8}
-                   {:suit :club :rank :10}
-                   {:suit :club :rank :4}
-                   {:suit :club :rank :3}
-                   {:suit :club :rank :2} ]]
-      (is (= {:strain :spade :level 1} (open hand)))))
+      (let [hand [(card :spade :ace)
+                  (card :spade :king)
+                  (card :spade 9)
+                  (card :spade 5)
+                  (card :spade 4)
+                  (card :heart :ace)
+                  (card :diamond :ace)
+                  (card :diamond 10)
+                  (card :diamond 8)
+                  (card :club 10)
+                  (card :club 4)
+                  (card :club 3)
+                  (card :club 2)]]
+        (is (= (bid 1 :spade) (open hand)))))
     (testing "bids 1H with opening points and 5 hearts"
-      (let [hand [
-                   {:suit :heart :rank :ace}
-                   {:suit :heart :rank :king}
-                   {:suit :heart :rank :9}
-                   {:suit :heart :rank :5}
-                   {:suit :heart :rank :4}
-                   {:suit :spade :rank :ace}
-                   {:suit :diamond :rank :ace}
-                   {:suit :diamond :rank :10}
-                   {:suit :diamond :rank :8}
-                   {:suit :club :rank :10}
-                   {:suit :club :rank :4}
-                   {:suit :club :rank :3}
-                   {:suit :club :rank :2}]]
-        (is (= {:strain :heart :level 1} (open hand)))))
+      (let [hand [(card :heart :ace)
+                  (card :heart :king)
+                  (card :heart 9)
+                  (card :heart 5)
+                  (card :heart 4)
+                  (card :spade :ace)
+                  (card :diamond :ace)
+                  (card :diamond 10)
+                  (card :diamond 8)
+                  (card :club 10)
+                  (card :club 4)
+                  (card :club 3)
+                  (card :club 2)]]
+        (is (= (bid 1 :heart) (open hand)))))
     (testing "bids 1S if five spades and five hearts"
-      (let [hand [
-                  {:suit :spade :rank :ace}
-                  {:suit :spade :rank :king}
-                  {:suit :spade :rank :9}
-                  {:suit :spade :rank :5}
-                  {:suit :spade :rank :4}
-                  {:suit :heart :rank :ace}
-                  {:suit :heart :rank :10}
-                  {:suit :heart :rank :4}
-                  {:suit :heart :rank :3}
-                  {:suit :heart :rank :2}
-                  {:suit :diamond :rank :ace}
-                  {:suit :diamond :rank :10}
-                  {:suit :diamond :rank :8}]]
-      (is (= {:strain :spade :level 1} (open hand)))))
-    (testing "opens minor suits"
-      (let [club_hand [
-                  {:suit :club :rank :ace}
-                  {:suit :club :rank :king}
-                  {:suit :club :rank :9}
-                  {:suit :club :rank :5}
-                  {:suit :club :rank :4}
-                  {:suit :heart :rank :ace}
-                  {:suit :heart :rank :10}
-                  {:suit :heart :rank :4}
-                  {:suit :heart :rank :3}
-                  {:suit :spade :rank :2}
-                  {:suit :diamond :rank :ace}
-                  {:suit :diamond :rank :10}
-                  {:suit :diamond :rank :8}]
-            diamond_hand [
-                  {:suit :diamond :rank :ace}
-                  {:suit :diamond :rank :king}
-                  {:suit :diamond :rank :9}
-                  {:suit :diamond :rank :5}
-                  {:suit :diamond :rank :4}
-                  {:suit :heart :rank :ace}
-                  {:suit :heart :rank :10}
-                  {:suit :heart :rank :4}
-                  {:suit :heart :rank :3}
-                  {:suit :spade :rank :2}
-                  {:suit :club :rank :ace}
-                  {:suit :club :rank :10}
-                  {:suit :club :rank :8}]
-            ]
-        (is (= {:strain :club :level 1} (open club_hand)))
-        (is (= {:strain :diamond :level 1} (open diamond_hand)))))))
+      (let [hand [(card :spade :ace)
+                  (card :spade :king)
+                  (card :spade 9)
+                  (card :spade 5)
+                  (card :spade 4)
+                  (card :heart :ace)
+                  (card :heart 10)
+                  (card :heart 4)
+                  (card :heart 2)
+                  (card :diamond :ace)
+                  (card :diamond 10)
+                  (card :diamond 8)]]
+        (is (= (bid 1 :spade) (open hand))))))
+  (testing "opens minor suits"
+    (let [club_hand [(card :club :ace)
+                     (card :club :king)
+                     (card :club 9)
+                     (card :club 5)
+                     (card :club 4)
+                     (card :heart :ace)
+                     (card :heart 10)
+                     (card :heart 4)
+                     (card :heart 3)
+                     (card :spade 2)
+                     (card :diamond :ace)
+                     (card :diamond 10)
+                     (card :diamond 8)]
+          diamond_hand [(card :diamond :ace)
+                        (card :diamond :king)
+                        (card :diamond 9)
+                        (card :diamond 5)
+                        (card :diamond 4)
+                        (card :heart :ace)
+                        (card :heart 10)
+                        (card :heart 4)
+                        (card :heart 3)
+                        (card :spade 2)
+                        (card :club :ace)
+                        (card :club 10)
+                        (card :club 8)]]
+      (is (= (bid 1 :club) (open club_hand)))
+      (is (= (bid 1 :diamond) (open diamond_hand))))))

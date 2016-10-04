@@ -18,6 +18,21 @@
 
 (s/def ::card (s/keys :req [::rank ::suit]))
 
+(def short-suits {:spade :sayc-app.bridge.types/spade
+                  :heart :sayc-app.bridge.types/heart
+                  :club :sayc-app.bridge.types/club
+                  :diamond :sayc-app.bridge.types/diamond})
+
+(def short-strains (conj short-suits {:notrump ::notrump}))
+
+(defn card [suit rank]
+  {::suit (get short-suits suit suit)
+   ::rank rank})
+
+(defn bid [level strain]
+  {::level level
+   ::strain (get short-strains strain strain)})
+
 (s/def ::hand (and #(distinct? %)
                    (s/tuple ::card ::card ::card ::card
                             ::card ::card ::card ::card

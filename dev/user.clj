@@ -4,6 +4,7 @@
             [clojure.pprint :refer (pprint)]
             [clojure.repl :refer :all]
             [clojure.test :as test]
+            [sayc-app.bridge.types :refer (card bid)]
             [clojure.tools.namespace.repl :refer (refresh refresh-all)]
             [sayc-app.system :as system]))
 
@@ -14,6 +15,20 @@
   []
   (alter-var-root #'system
     (constantly (system/system))))
+
+(def balanced-hand [(card :spade :ace)
+                    (card :spade :king)
+                    (card :spade 5)
+                    (card :spade 4)
+                    (card :heart :ace)
+                    (card :heart 10)
+                    (card :heart 9)
+                    (card :diamond :ace)
+                    (card :diamond 10)
+                    (card :diamond 8)
+                    (card :club 4)
+                    (card :club 3)
+                    (card :club 2)])
 
 (defn start
     "Starts the current development system."
@@ -38,9 +53,6 @@
 
 (defn hand []
   (into [] (first (sayc-app.bridge.deck/deal))))
-
-(defn bid [level strain]
-  {:sayc-app.bridge.types/strain strain :sayc-app.bridge.types/level level})
 
 (defn points [hand]
   (clojure.core.logic/run 1 [q] (sayc-app.bridge.bido/hand-pointo hand q)))
