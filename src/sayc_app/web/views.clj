@@ -8,9 +8,16 @@
             [sayc-app.bridge.types :refer [suits ranks strains levels]])
   (:use [hiccup.page :only [include-css]]))
 
-(def glyph-for-suit {:diamond "&diams;" :club "&clubs;" :heart "&hearts;" :spade "&spades;"})
-(def color-for-suit {:diamond "red" :heart "red" })
-(def display-strain {:diamond "D" :club "C" :heart "H" :spade "S" :notrump "NT"})
+(def glyph-for-suit {:sayc-app.bridge.types/diamond "&diams;"
+                     :sayc-app.bridge.types/club "&clubs;"
+                     :sayc-app.bridge.types/heart "&hearts;"
+                     :sayc-app.bridge.types/spade "&spades;"})
+(def color-for-suit {:sayc-app.bridge.types/diamond "red" :sayc-app.bridge.types/heart "red" })
+(def display-strain {:sayc-app.bridge.types/diamond "D"
+                     :sayc-app.bridge.types/club "C"
+                     :sayc-app.bridge.types/heart "H"
+                     :sayc-app.bridge.types/spade "S"
+                     :sayc-app.bridge.types/notrump "NT"})
 
 (defn- display-card [{rank :rank}]
   (rank {:ace "A" :king "K" :queen "Q" :jack "J"} (name rank)))
