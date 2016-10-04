@@ -12,7 +12,6 @@
 (def color-for-suit {:diamond "red" :heart "red" })
 (def display-strain {:diamond "D" :club "C" :heart "H" :spade "S" :notrump "NT"})
 
-
 (defn- display-card [{rank :rank}]
   (rank {:ace "A" :king "K" :queen "Q" :jack "J"} (name rank)))
 
