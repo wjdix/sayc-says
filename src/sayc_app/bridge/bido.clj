@@ -53,10 +53,6 @@
          (ranko card r)
          (pointo r point)))
 
-(s/fdef count-points
-        :args (s/cat :hand :sayc-app.bridge.types/hand)
-        :ret integer?)
-
 (defn hand-pointo [hand points]
   (conde
    [(== hand ()) (== points 0)]
@@ -131,19 +127,19 @@
 
 (defn balanced-distributo [distribution]
   (fresh [sc hc cc dc]
-    (featurec distribution {:sayc-app.bridge.types/spade sc
-                            :sayc-app.bridge.types/club cc
-                            :sayc-app.bridge.types/diamond dc
-                            :sayc-app.bridge.types/heart hc})
-    (betweeno sc 2 5)
-    (betweeno hc 2 5)
-    (betweeno cc 2 5)
-    (betweeno sc 2 5)))
+         (featurec distribution {:sayc-app.bridge.types/spade sc
+                                 :sayc-app.bridge.types/club cc
+                                 :sayc-app.bridge.types/diamond dc
+                                 :sayc-app.bridge.types/heart hc})
+         (betweeno sc 2 5)
+         (betweeno hc 2 5)
+         (betweeno cc 2 5)
+         (betweeno sc 2 5)))
 
 (defn balanced? [hand]
   (fresh [d]
-    (hand-distributo hand d)
-    (balanced-distributo d)))
+         (hand-distributo hand d)
+         (balanced-distributo d)))
 
 (defn strong-two-clubso [hand bid]
   (conde
@@ -158,35 +154,46 @@
          (bido suit 1 bid)))
 
 (defn four-card-minoro [hand bid]
-  (fresh [suit]
-         (membero suit sayc-app.bridge.types/minor-suits)
-         (more-than-fouro hand suit)
-         (at-least-pointso hand 13)
-         (bido suit 1 bid)))
+  (conde
+   [(fresh [suit]
+           (membero suit sayc-app.bridge.types/minor-suits)
+           (more-than-fouro hand suit)
+           (at-least-pointso hand 13)
+           (bido suit 1 bid))]
+   [(== 1 0)]))
 
 (defn no-trumpo [hand bid]
   (conde
    [(balanced? hand)
     (between-pointso hand 15 17)
     (bido :sayc-app.bridge.types/notrump 1 bid)]
-   [(== 0 1)]))
+   [(== 1 0)]))
+
+(defn strong-two-no-trumpo [hand bid]
+  (conde
+   [(balanced? hand)
+    (between-pointso hand 20 22)
+    (bido :sayc-app.bridge.types/notrump 2 bid)]
+   [(== 1 0)]))
 
 (defn weak-twoso [hand bid]
   (let [weak-two-suits [:sayc-app.bridge.types/heart
                         :sayc-app.bridge.types/diamond
                         :sayc-app.bridge.types/spade]]
-    (fresh [suit]
-           (between-pointso hand 5 11)
-           (membero suit weak-two-suits)
-           (more-than-sixo hand suit)
-           (bido 2 suit bid))))
+    (conde
+     [(fresh [suit]
+             (between-pointso hand 5 11)
+             (membero suit weak-two-suits)
+             (more-than-sixo hand suit)
+             (bido 2 suit bid))]
+     [(== 1 0)])))
 
 (defn openo [hand bid]
   (condu
-   [(weak-twoso hand bid)]
+   [(strong-two-no-trumpo hand bid)]
    [(strong-two-clubso hand bid)]
+   [(weak-twoso hand bid)]
    [(five-card-majoro hand bid)]
    [(no-trumpo hand bid)]
    [(four-card-minoro hand bid)]
    [(== bid :pass)]))
-

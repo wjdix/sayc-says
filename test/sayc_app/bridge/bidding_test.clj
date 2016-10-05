@@ -4,6 +4,21 @@
             [sayc-app.bridge.bidding :refer :all]))
 
 (deftest open-bidding
+  (testing "bids 2NT hands"
+    (is (= (bid 2 :notrump)
+           (open [(card :spade :ace)
+                  (card :spade :king)
+                  (card :spade :jack)
+                  (card :heart :ace)
+                  (card :heart 10)
+                  (card :heart 9)
+                  (card :heart 8)
+                  (card :club :ace)
+                  (card :club :king)
+                  (card :club :queen)
+                  (card :diamond 9)
+                  (card :diamond 8)
+                  (card :diamond 7)]))))
   (testing "bids 1NT hands"
     (testing "opens 15 HCP balanced hands"
       (let [hand [(card :spade :ace)
