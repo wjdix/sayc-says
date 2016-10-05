@@ -19,17 +19,18 @@
                      :sayc-app.bridge.types/spade "S"
                      :sayc-app.bridge.types/notrump "NT"})
 
-(defn- display-card [{rank :rank}]
-  (rank {:ace "A" :king "K" :queen "Q" :jack "J"} (name rank)))
+(defn- display-card [{rank :sayc-app.bridge.types/rank}]
+  (get {:ace "A" :king "K" :queen "Q" :jack "J"} rank rank))
 
 (defmulti display-bid class)
 (defmethod display-bid nil [_] "")
 (defmethod display-bid clojure.lang.Keyword [pass] "Pass")
-(defmethod display-bid clojure.lang.PersistentArrayMap [{level :level strain :strain}]
+(defmethod display-bid clojure.lang.PersistentArrayMap [{level :sayc-app.bridge.types/level strain :sayc-app.bridge.types/strain}]
   (str level (strain display-strain)))
 
-(defn card-rank [{rank :rank}]
-  (rank (apply hash-map (interleave (reverse ranks) (range)))))
+(defn card-rank [{rank :sayc-app.bridge.types/rank}]
+  (get (apply hash-map (interleave (reverse ranks) (range))) rank))
+
 (defn suit-rank [suit]
   (suit (apply hash-map (interleave (reverse suits) (range)))))
 
@@ -48,7 +49,7 @@
   (hiccup/html
     [:div.diagram
      [:div.hand.north
-      (map suit-div (sort-by #(suit-rank (first %)) (group-by :suit hand)))]]
+      (map suit-div (sort-by #(suit-rank (first %)) (group-by :sayc-app.bridge.types/suit hand)))]]
     )
   )
 

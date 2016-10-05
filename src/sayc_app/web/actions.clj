@@ -2,9 +2,9 @@
   (:use [sayc-app.bridge.deck :as deck]
         [sayc-app.web.views :as views]
         [sayc-app.bridge.scoring :as scoring]
+        [sayc-app.bridge.types]
         [sayc-app.web.validation :as validate]
-        [ring.util.response :only [redirect not-found]]
-        )
+        [ring.util.response :only [redirect not-found]])
   (:require [clojure.data.json :as json]))
 
 (defn- new-uuid [] (str (java.util.UUID/randomUUID)))
@@ -13,16 +13,40 @@
 
 (def chicago-games (atom {}))
 
+(def key-mapping
+  {"suit" :sayc-app.bridge.types/suit
+   "rank" :sayc-app.bridge.types/rank})
+
+(def rank-map
+  {"ace" :ace
+   "king" :king
+   "queen" :queen
+   "jack" :jack})
+
+(def suit-map
+  {"club" :sayc-app.bridge.types/club
+   "diamond" :sayc-app.bridge.types/diamond
+   "heart" :sayc-app.bridge.types/heart
+   "spade" :sayc-app.bridge.types/spade})
+
+(def strain-map
+  (conj suit-map {"notrump" :sayc-app.bridge.types/notrump}))
+
+(defn transform-value [key val]
+  (cond
+    (= key :sayc-app.bridge.types/rank) (get rank-map val val)
+    (= key :sayc-app.bridge.types/suit) (get suit-map val)))
+
 (defn create-bid [request]
   (let [params (:params request)
-        hand (json/read-str (:hand params) :key-fn (fn [x] (keyword x)) :value-fn (fn [key val] (keyword val)))
+        hand (json/read-str (:hand params) :key-fn (fn [x] (get key-mapping x)) :value-fn transform-value)
         pass? (= (:bid params) "Pass")
         sayc-bid (sayc-app.bridge.bidding/open hand)]
     (if pass?
       (views/show-bid hand sayc-bid :pass)
       (let [level (Integer. (get-in request [:params :level]))
-            strain (-> request :params :strain keyword)
-            bid {:strain strain :level level}]
+            strain (-> request :params :strain strain-map)
+            bid {:sayc-app.bridge.types/strain strain :sayc-app.bridge.types/level level}]
         (views/show-bid hand sayc-bid bid)))))
 
 (defn new-scored-hand [request]
@@ -67,7 +91,7 @@
    :hand (get-in request [:params :hand])})
 
 (defn enrich-with-prereqs [request]
-   (assoc request :game (get @chicago-games (:id request))))
+  (assoc request :game (get @chicago-games (:id request))))
 
 (defn validate-prereqs [prereqs]
   (assoc prereqs :errors (validate/hand (:hand prereqs))))
@@ -95,5 +119,5 @@
     :else (views/display-chicago-game (:id request) (:game request) (:errors request))))
 
 (defn add-hand-to-chicago-game [request]
-    (-> request extract-params enrich-with-prereqs validate-prereqs
-        derive-status conditionally-persist render))
+  (-> request extract-params enrich-with-prereqs validate-prereqs
+      derive-status conditionally-persist render))
