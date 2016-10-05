@@ -29,7 +29,9 @@
   (str level (strain display-strain)))
 
 (defn card-rank [{rank :sayc-app.bridge.types/rank}]
-  (get (apply hash-map (interleave (reverse ranks) (range))) rank))
+  (let [rank-ordering
+        [:ace :king :queen :jack 10 9 8 7 6 5 4 3 2]]
+    (.indexOf rank-ordering rank)))
 
 (defn suit-rank [suit]
   (suit (apply hash-map (interleave (reverse suits) (range)))))
