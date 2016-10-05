@@ -57,8 +57,10 @@
 (defn points [hand]
   (clojure.core.logic/run 1 [q] (sayc-app.bridge.bido/hand-pointo hand q)))
 
-(defn test-it []
-  (let [test-hand (hand)]
-    (println (points test-hand))
-    (println (clojure.core.logic/run 1 [q] (sayc-app.bridge.bido/hand-distributo test-hand q)))
-    (sayc-app.bridge.bidding/open test-hand)))
+(defn test-it
+  ([] (refresh :after 'test/run-all-tests))
+  ([namespace-or-test]
+   (refresh)
+   (if (find-ns namespace-or-test)
+     (test/test-ns namespace-or-test)
+     ((resolve namespace-or-test)))))
