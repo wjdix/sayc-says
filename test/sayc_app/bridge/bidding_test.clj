@@ -1,9 +1,15 @@
 (ns sayc-app.bridge.bidding-test
   (:require [clojure.test :refer :all]
             [sayc-app.bridge.types :refer (card bid)]
-            [sayc-app.bridge.bidding :refer :all]))
+            [sayc-app.bridge.bidding :refer :all]
+            [clojure.spec.test :as stest]))
 
 (deftest open-bidding
+  (testing "it conforms to the spec"
+    (let [results (-> (stest/check `sayc-app.bridge.bidding/open) first :clojure.spec.test.check/ret :result)]
+      (if (true? results)
+        (is results)
+        (is (= {} (ex-data results))))))
   (testing "bids 2NT hands"
     (is (= (bid 2 :notrump)
            (open [(card :spade :ace)

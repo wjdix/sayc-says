@@ -27,9 +27,6 @@
 (defn suito [card suit]
   (featurec card {:sayc-app.bridge.types/suit suit}))
 
-(defn bido [strain level bid]
-  (== {:sayc-app.bridge/strain strain :sayc-app.bridge/level level} bid))
-
 (defn cardo [rank suit card]
   (== {:sayc-app.bridge.types/rank rank :sayc-app.bridge.types/suit suit} card)
   (membero rank sayc-app.bridge.types/ranks)
@@ -143,7 +140,7 @@
 
 (defn strong-two-clubso [hand bid]
   (conde
-   [(at-least-pointso hand 22) (bido :clubs 2 bid)]
+   [(at-least-pointso hand 22) (bido :sayc-app.bridge.types/club 2 bid)]
    [(== 1 0)]))
 
 (defn five-card-majoro [hand bid]
@@ -185,7 +182,7 @@
              (between-pointso hand 5 11)
              (membero suit weak-two-suits)
              (more-than-sixo hand suit)
-             (bido 2 suit bid))]
+             (bido suit 2  bid))]
      [(== 1 0)])))
 
 (defn openo [hand bid]

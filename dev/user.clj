@@ -4,6 +4,8 @@
             [clojure.pprint :refer (pprint)]
             [clojure.repl :refer :all]
             [clojure.test :as test]
+            [clojure.spec.test :as stest]
+            [clojure.test.check] ;Required as work around for https://github.com/clojure-emacs/cider-nrepl/issues/369
             [sayc-app.bridge.types :refer (card bid)]
             [clojure.tools.namespace.repl :refer (refresh refresh-all)]
             [sayc-app.system :as system]))
