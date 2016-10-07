@@ -2,6 +2,7 @@
   (:require [clojure.test :refer :all]
             [sayc-app.bridge.types :refer (card bid)]
             [sayc-app.bridge.bidding :refer :all]
+            [clojure.test.check]
             [clojure.spec.test :as stest]))
 
 (deftest open-bidding
@@ -115,3 +116,25 @@
                         (card :club 8)]]
       (is (= (bid 1 :club) (open club_hand)))
       (is (= (bid 1 :diamond) (open diamond_hand))))))
+
+(deftest respond-bidding
+  (testing "conforms to the spec"
+    (let [results (-> (stest/check `sayc-app.bridge.bidding/respond) first :clojure.spec.test.check/ret :result)]
+      (if (true? results)
+        (is results)
+        (is (= {} (ex-data results))))))
+  (testing "responds to major bids at the 1 level"
+    (let [responder-hand [(card :spade :queen)
+                          (card :spade 8)
+                          (card :spade 3)
+                          (card :heart 9)
+                          (card :heart 5)
+                          (card :diamond 9)
+                          (card :diamond 6)
+                          (card :diamond 4)
+                          (card :diamond 2)
+                          (card :club :king)
+                          (card :club :queen)
+                          (card :club :jack)
+                          (card :club 3)]]
+      (is (= (bid 2 :spade) (respond responder-hand (bid 1 :spade)))))))

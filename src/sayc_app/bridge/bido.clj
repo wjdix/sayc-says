@@ -194,3 +194,43 @@
    [(no-trumpo hand bid)]
    [(four-card-minoro hand bid)]
    [(== bid :pass)]))
+
+(defn distribution-points-for-suito [hand suit points]
+  (condu
+   [(suit-counto hand suit 0) (== points 5)]
+   [(suit-counto hand suit 1) (== points 3)]
+   [(suit-counto hand suit 2) (== points 1)]
+   [(== points 0)]))
+
+(defn distribution-pointso [hand points]
+  (fresh [cdp ddp hdp sdp minor-dp major-dp]
+         (distribution-points-for-suito hand :sayc-app.bridge.types/spade sdp)
+         (distribution-points-for-suito hand :sayc-app.bridge.types/heart hdp)
+         (distribution-points-for-suito hand :sayc-app.bridge.types/diamond ddp)
+         (distribution-points-for-suito hand :sayc-app.bridge.types/club cdp)
+         (fd/+ cdp ddp minor-dp)
+         (fd/+ hdp sdp major-dp)
+         (fd/+ minor-dp major-dp points)))
+
+(defn dummy-pointso [hand points]
+  (fresh [high-card-points distribution-points]
+         (hand-pointo hand high-card-points)
+         (distribution-pointso hand distribution-points)
+         (fd/+ high-card-points distribution-points points)))
+
+(defn straino [bid strain]
+  (featurec bid {:sayc-app.bridge.types/strain strain}))
+
+(defn major-respondo [hand partner-bid bid]
+  (fresh [partner-suit dummy-points partner-suit]
+    (straino partner-bid partner-suit)
+    (membero partner-suit sayc-app.bridge.types/major-suits)
+    (dummy-pointso hand dummy-points)
+    (condu
+     [(suit-counto hand partner-suit 3)(betweeno dummy-points 8 10)(bido partner-suit 2 bid)]
+     [(== 0 1)])))
+
+(defn respondo [hand partner-bid bid]
+  (condu
+   [(major-respondo hand partner-bid bid)]
+   [(== bid :pass)]))
